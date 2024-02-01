@@ -16,6 +16,7 @@ import java.util.function.Function;
 public class JwtUtil {
     private String secret = "HlT#4vFro6scto2ri+^;";
     public String extractUsername(String token){
+
         return extractClaims(token, Claims::getSubject);
     }
     public Date extractExpiration(String token){
@@ -29,6 +30,7 @@ public class JwtUtil {
     public Claims extractAllClaims(String token){
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
+    // this method check if a given jwt token has expired by comparing the expiration date from the token with current date
     private Boolean isTokenExpired(String token){
         return extractExpiration(token).before(new Date());
     }
@@ -46,7 +48,7 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(SignatureAlgorithm.HS256, secret).compact();
     }
-
+// it checks if the extracted username from the token matches the username from the userDetails object
     public Boolean validateToken(String token, UserDetails userDetails){
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
